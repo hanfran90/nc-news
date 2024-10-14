@@ -5,7 +5,9 @@ const app = express();
 
 app.get("/api/topics", getTopics);
 
-app.use(express.json());
+app.use("/*", (request, response) => {
+  response.status(404).send({ msg: "Route not found" });
+});
 
 app.use((err, request, response, next) => {
   response.status(500).send({ msg: "500 server error" });
