@@ -49,3 +49,59 @@ describe("/api/topics", () => {
       });
   });
 });
+
+describe(" /api/articles/:article_id", () => {
+  test("GET 200: responds with the correct article object when requested by an id number", () => {
+    return request(app)
+      .get("/api/articles/3")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article.article_id).toBe(3);
+        expect(article.title).toBe("Eight pug gifs that remind me of mitch");
+        expect(article.topic).toBe("mitch");
+        expect(article.author).toBe("icellusedkars");
+        expect(article.body).toBe("some gifs");
+        expect(article.created_at).toBe("2020-11-03T09:12:00.000Z");
+        expect(article.votes).toBe(0);
+        expect(article.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+      });
+  });
+  test("GET 404: responds with an error when article_id is given the right type (ie number) but is not present in the database", () => {
+    return request(app)
+      .get("/api/articles/8324")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not Found!");
+      });
+  });
+  test("GET 400: responds with an error when article_id is an invalid datatype", () => {
+    return request(app)
+      .get("/api/articles/not-a-number")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid data type!");
+      });
+  });
+});
+
+// Description
+// Should:
+
+// be available on /api/articles/:article_id.
+// get an article by its id.
+// Responds with:
+
+// an article object, which should have the following properties:
+// author
+// title
+// article_id
+// body
+// topic
+// created_at
+// votes
+// article_img_url
+// Consider what errors could occur with this endpoint, and make sure to test for them.
+
+// Remember to add a description of this endpoint to your /api endpoint.
