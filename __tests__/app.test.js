@@ -2,7 +2,8 @@ const request = require("supertest");
 const app = require("../app.js");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
-const testData = "../db/data/test-data";
+const testData = require("../db/data/test-data");
+const endpoints = require("../endpoints.json");
 
 beforeEach(() => {
   return seed(testData);
@@ -19,6 +20,17 @@ describe("Any url that does not have a route to the api", () => {
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Route not found");
+      });
+  });
+});
+
+describe("/api", () => {
+  test("GET: 200 - responds with an object detailing all available endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.endpoints).toEqual(endpoints);
       });
   });
 });
