@@ -29,8 +29,8 @@ describe("/api", () => {
     return request(app)
       .get("/api")
       .expect(200)
-      .then(({ body }) => {
-        expect(body.endpoints).toEqual(endpoints);
+      .then(({ body: { endpoints } }) => {
+        expect(endpoints).toEqual(endpoints);
       });
   });
 });
@@ -40,9 +40,7 @@ describe("/api/topics", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
-      .then(({ body }) => {
-        const { topics } = body;
-
+      .then(({ body: { topics } }) => {
         expect(topics).toHaveLength(3);
         topics.forEach((topic) => {
           expect(typeof topic.description).toBe("string");
