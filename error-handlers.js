@@ -1,6 +1,6 @@
 exports.psqlErrorHandler = ((err, request, response, next) => {
     if (err.code === "22P02") {
-      response.status(400).send({ msg: "Invalid data type!" });
+      response.status(400).send({ msg: "Bad Request!" });
     }
     next(err);
   });

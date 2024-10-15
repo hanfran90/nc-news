@@ -87,7 +87,7 @@ describe(" /api/articles/:article_id", () => {
 });
 
 describe(" /api/articles", () => {
-  test("GET 200: responds with the all the articles when requested without a body propert present", () => {
+  test("GET 200: responds with the all the articles when requested without a body property present", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -102,44 +102,16 @@ describe(" /api/articles", () => {
           expect(typeof article.votes).toBe("number");
           expect(typeof article.article_img_url).toBe("string");
           expect(typeof article.comment_count).toBe("string");
+          expect(article).not.toHaveProperty("body");
         });
       });
   });
-  test("GET 200: sort_by query and responds with articles sorted by date as default in descending order", () => {
+  test("GET 200: responds with articles sorted by date as default in descending order", () => {
     return request(app)
-      .get("/api/articles?sort_by=created_at")
+      .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        console.log(articles);
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
-  test("400: should recieve an error when sort_by is given a column that doesn't exist", () => {
-    return request(app)
-      .get("/api/articles?sort_by=non_existent")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Bad Request!");
-      });
-  });
 });
-
-//ERRORS
-
-// ### GET `/api/articles`
-
-// - Bad queries:
-//   - `sort_by` a column that doesn't exist
-//   - `order` !== "asc" / "desc"
-//   - `topic` that is not in the database
-//   - `topic` that exists but does not have any articles associated with it
-
-// articles.*
-
-// articles.article_id,
-// articles.title,
-// articles.topic,
-// articles.author,
-// articles.created_at,
-// articles.votes,
-// articles.article_img_url

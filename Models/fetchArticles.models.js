@@ -1,20 +1,6 @@
 const db = require("../db/connection");
 
-function fetchArticles(sort_by = "created_at") {
-  const validSortBys = [
-    "article_id",
-    "title",
-    "author",
-    "topic",
-    "created_at",
-    "votes",
-    "article_img_url",
-  ];
-
-  if (!validSortBys.includes(sort_by)) {
-    return Promise.reject({ status: 400, msg: "Bad Request!" });
-  }
-
+function fetchArticles() {
   return db
     .query(
       `SELECT articles.article_id,
