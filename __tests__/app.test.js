@@ -105,9 +105,17 @@ describe(" /api/articles", () => {
         });
       });
   });
+  test("GET 200: sort_by query and responds with articles sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        console.log(articles.created_at);
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
 });
 
-//test should respond with all article information
 //test should be sorted by date in descending order
 //should not be a body property present on any of the article objects
 
