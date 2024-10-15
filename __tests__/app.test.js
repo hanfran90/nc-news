@@ -81,22 +81,22 @@ describe(" /api/articles/:article_id", () => {
       .get("/api/articles/not-a-number")
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Invalid data type!");
+        expect(msg).toBe("Bad Request!");
       });
   });
 });
 
 describe(" /api/articles", () => {
-  test("GET 200: responds with the all the articles when requested", () => {
+  test("GET 200: responds with the all the articles when requested without a body propert present", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles).toHaveLength(13);
         articles.forEach((article) => {
-          expect(typeof article.author).toBe("string");
-          expect(typeof article.title).toBe("string");
           expect(typeof article.article_id).toBe("number");
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.author).toBe("string");
           expect(typeof article.topic).toBe("string");
           expect(typeof article.created_at).toBe("string");
           expect(typeof article.votes).toBe("number");
@@ -105,19 +105,24 @@ describe(" /api/articles", () => {
         });
       });
   });
-  test("GET 200: sort_by query and responds with articles sorted by date in descending order", () => {
+  test("GET 200: sort_by query and responds with articles sorted by date as default in descending order", () => {
     return request(app)
       .get("/api/articles?sort_by=created_at")
       .expect(200)
       .then(({ body: { articles } }) => {
-        console.log(articles.created_at);
+        console.log(articles);
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
+  test("400: should recieve an error when sort_by is given a column that doesn't exist", () => {
+    return request(app)
+      .get("/api/articles?sort_by=non_existent")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request!");
+      });
+  });
 });
-
-//test should be sorted by date in descending order
-//should not be a body property present on any of the article objects
 
 //ERRORS
 
@@ -128,3 +133,13 @@ describe(" /api/articles", () => {
 //   - `order` !== "asc" / "desc"
 //   - `topic` that is not in the database
 //   - `topic` that exists but does not have any articles associated with it
+
+// articles.*
+
+// articles.article_id,
+// articles.title,
+// articles.topic,
+// articles.author,
+// articles.created_at,
+// articles.votes,
+// articles.article_img_url
