@@ -81,27 +81,37 @@ describe(" /api/articles/:article_id", () => {
       .get("/api/articles/not-a-number")
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Invalid data type!");
+        expect(msg).toBe("Bad Request!");
       });
   });
 });
 
-// Description
-// Should:
-
-// be available on /api/articles/:article_id.
-// get an article by its id.
-// Responds with:
-
-// an article object, which should have the following properties:
-// author
-// title
-// article_id
-// body
-// topic
-// created_at
-// votes
-// article_img_url
-// Consider what errors could occur with this endpoint, and make sure to test for them.
-
-// Remember to add a description of this endpoint to your /api endpoint.
+describe(" /api/articles", () => {
+  test("GET 200: responds with the all the articles when requested without a body property present", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toHaveLength(13);
+        articles.forEach((article) => {
+          expect(typeof article.article_id).toBe("number");
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.topic).toBe("string");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(typeof article.comment_count).toBe("string");
+          expect(article).not.toHaveProperty("body");
+        });
+      });
+  });
+  test("GET 200: responds with articles sorted by date as default in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});

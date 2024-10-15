@@ -1,5 +1,10 @@
 const express = require("express");
-const { getTopics, getApi, getArticleId } = require("./Controllers");
+const { getTopics, getApi, getArticleId, getArticles } = require("./Controllers");
+const {
+  psqlErrorHandler,
+  customErrorHandler,
+  serverErrorHandler,
+} = require("./error-handlers");
 
 const app = express();
 
@@ -9,24 +14,15 @@ app.get("/api/topics", getTopics);
 
 app.get("/api/articles/:article_id", getArticleId);
 
+app.get("/api/articles", getArticles)
+
 app.use("/*", (request, response) => {
   response.status(404).send({ msg: "Route not found" });
 });
 
-app.use((err, request, response, next) => {
-  if (err.code === "22P02") {
-    response.status(400).send({ msg: "Invalid data type!" });
-  }
-  next(err);
-});
+app.use(psqlErrorHandler);
 
-app.use((err, request, response, next) => {
-  if (err.status && err.msg) {
-    response.status(err.status).send({ msg: err.msg });
-  }
-  next(err);
-});
-app.use((err, request, response) => {
-  response.status(500).send({ msg: "500 server error" });
-});
+app.use(customErrorHandler);
+
+app.use(serverErrorHandler);
 module.exports = app;
