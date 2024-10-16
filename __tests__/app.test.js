@@ -143,4 +143,20 @@ describe("/api/articles/:article_id/comments", () => {
         expect(comments.length).toBe(0);
       });
   });
+  test("POST 201: adds a comment to the correct article_id with a username and body key", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "butter_bridge", body: "This is a great article" })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          author: "butter_bridge",
+          body: "This is a great article",
+          article_id: 2,
+          votes: 0,
+          comment_id: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
 });

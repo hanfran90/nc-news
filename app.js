@@ -5,6 +5,7 @@ const {
   getArticleId,
   getArticles,
   getArticleComments,
+  postCommentsByArticle,
 } = require("./Controllers");
 const {
   psqlErrorHandler,
@@ -13,6 +14,8 @@ const {
 } = require("./error-handlers");
 
 const app = express();
+
+app.use(express.json());
 
 app.get("/api", getApi);
 
@@ -23,6 +26,8 @@ app.get("/api/articles/:article_id", getArticleId);
 app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getArticleComments);
+
+app.post("/api/articles/:article_id/comments", postCommentsByArticle);
 
 app.use("/*", (request, response) => {
   response.status(404).send({ msg: "Route not found" });
