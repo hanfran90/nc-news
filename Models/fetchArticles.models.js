@@ -17,7 +17,6 @@ function fetchArticles() {
     ORDER BY created_at DESC`
     )
     .then((results) => {
-      console.log(results.rows);
       return results.rows;
     });
 }
