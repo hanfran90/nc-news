@@ -50,7 +50,7 @@ describe("/api/topics", () => {
   });
 });
 
-describe(" /api/articles/:article_id", () => {
+describe("/api/articles/:article_id", () => {
   test("GET 200: responds with the correct article object when requested by an id number", () => {
     return request(app)
       .get("/api/articles/3")
@@ -86,7 +86,7 @@ describe(" /api/articles/:article_id", () => {
   });
 });
 
-describe(" /api/articles", () => {
+describe("/api/articles", () => {
   test("GET 200: responds with the all the articles when requested without a body property present", () => {
     return request(app)
       .get("/api/articles")
@@ -112,6 +112,35 @@ describe(" /api/articles", () => {
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+
+describe("/api/articles/:article_id/comments", () => {
+  test("GET 200: responds with an array of comments for the given article_id", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments.length).toBeGreaterThan(0);
+        comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("votes");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("author");
+          expect(comment).toHaveProperty("body");
+          expect(comment).toHaveProperty("article_id");
+        });
+      });
+  });
+  test("GET 200: responds with an empty array when no comments for the given article_id", () => {
+    return request(app)
+      .get("/api/articles/5678/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments.length).toBe(0);
       });
   });
 });
