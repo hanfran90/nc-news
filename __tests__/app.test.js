@@ -159,4 +159,53 @@ describe("/api/articles/:article_id/comments", () => {
         });
       });
   });
+  test("POST 400: responds with an error if the article id is not valid", () => {
+    return request(app)
+      .post("/api/articles/not-a-number/comments")
+      .send({ username: "butter_bridge", body: "This is a great article" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toMatchObject({ msg: "Bad Request!" });
+      });
+  });
+  test("POST 400: responds with an error if username or body is missing", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ body: "This is a great article" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toMatchObject({
+          msg: "Bad Request - missing username and/or body!",
+        });
+      });
+  });
+  test("POST 404: responds with an error if the article id is valid but does not exist", () => {
+    return request(app)
+      .post("/api/articles/5678/comments")
+      .send({ username: "butter_bridge", body: "The article doesn't exist!" })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body).toMatchObject({ msg: "Not found - Article not found!" });
+      });
+  });
+  test("POST 400: responds with an error if 'body' is not a string", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "butter_bridge", body: 5678 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toMatchObject({
+          msg: "Bad Request - 'body' must be a string!",
+        });
+      });
+  });
+  test("POST 404: responds with an error if the username does not exist", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "non-existant-user", body: "This is a great article" })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body).toMatchObject({ msg: "Not found - Username not found!" });
+      });
+  });
 });
