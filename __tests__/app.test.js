@@ -174,11 +174,10 @@ describe("/api/articles/:article_id/comments", () => {
   });
   test("GET 200: responds with an empty array when no comments for the given article_id", () => {
     return request(app)
-      .get("/api/articles/5678/comments")
+      .get("/api/articles/10/comments")
       .expect(200)
-      .then(({ body: { comments } }) => {
-        expect(comments).toBeInstanceOf(Array);
-        expect(comments.length).toBe(0);
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
       });
   });
   test("GET 400: responds with an error when article_id is an invalid datatype", () => {
@@ -187,6 +186,14 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Bad Request!");
+      });
+  });
+  test("GET 404: responds with an error when article_id is given the right type (ie number) but is not present in the database", () => {
+    return request(app)
+      .get("/api/articles/5678/comments")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not Found!");
       });
   });
   test("POST 201: adds a comment to the correct article_id with a username and body key", () => {
@@ -211,7 +218,7 @@ describe("/api/articles/:article_id/comments", () => {
       .send({ username: "butter_bridge", body: "This is a great article" })
       .expect(400)
       .then(({ body }) => {
-        expect(body).toMatchObject({ msg: "Bad Request!" });
+        expect(body).toEqual({ msg: "Bad Request!" });
       });
   });
   test("POST 400: responds with an error if username or body is missing", () => {
@@ -252,6 +259,33 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body).toMatchObject({ msg: "Not found - Username not found!" });
+      });
+  });
+});
+
+describe("/api/comments/:commet_id", () => {
+  test("DELETE 204: responds with no content when given a valid comment id", () => {
+    return request(app)
+      .delete("/api/comments/7")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("DELETE 400: responds with an error when given an invalid comment id", () => {
+    return request(app)
+      .delete("/api/comments/hello")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toEqual({ msg: "Invalid comment ID!" });
+      });
+  });
+  test("DELETE 404: responds with an error when a comment is not found", () => {
+    return request(app)
+      .delete("/api/comments/5678")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body).toEqual({ msg: "Comment not found!" });
       });
   });
 });
