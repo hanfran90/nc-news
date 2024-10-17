@@ -84,6 +84,44 @@ describe("/api/articles/:article_id", () => {
         expect(msg).toBe("Bad Request!");
       });
   });
+  test("PATCH 200: responds with an updated article vote", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .expect(200)
+      .send({ inc_votes: 1 })
+      .then(({ body: { updatedArticle } }) => {
+        expect(updatedArticle.article_id).toBe(3);
+        expect(updatedArticle.title).toBe(
+          "Eight pug gifs that remind me of mitch"
+        );
+        expect(updatedArticle.topic).toBe("mitch");
+        expect(updatedArticle.author).toBe("icellusedkars");
+        expect(updatedArticle.body).toBe("some gifs");
+        expect(updatedArticle.created_at).toBe("2020-11-03T09:12:00.000Z");
+        expect(updatedArticle.votes).toBe(1);
+        expect(updatedArticle.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+      });
+  });
+  test("PATCH 400: responds with an error when votes value does not equal a valid id type", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .expect(400)
+      .send({ inc_votes: "hello" })
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request!");
+      });
+  });
+  test("PATCH 400: responds with an error when sending a request that does not contain a key or a value", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .expect(400)
+      .send({})
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request!");
+      });
+  });
 });
 
 describe("/api/articles", () => {
@@ -141,6 +179,14 @@ describe("/api/articles/:article_id/comments", () => {
       .then(({ body: { comments } }) => {
         expect(comments).toBeInstanceOf(Array);
         expect(comments.length).toBe(0);
+      });
+  });
+  test("GET 400: responds with an error when article_id is an invalid datatype", () => {
+    return request(app)
+      .get("/api/articles/not-a-number/comments")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request!");
       });
   });
   test("POST 201: adds a comment to the correct article_id with a username and body key", () => {

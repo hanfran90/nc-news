@@ -1,6 +1,6 @@
 const db = require("../db/connection");
 
-function fetchTopics(request, response) {
+function fetchTopics() {
   return db.query("SELECT * FROM topics").then(({ rows }) => {
     return rows;
   });
