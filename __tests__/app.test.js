@@ -269,8 +269,23 @@ describe("/api/comments/:commet_id", () => {
       .delete("/api/comments/7")
       .expect(204)
       .then(({ body }) => {
-        console.log(body);
         expect(body).toEqual({});
+      });
+  });
+  test("DELETE 400: responds with an error when given an invalid comment id", () => {
+    return request(app)
+      .delete("/api/comments/hello")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toEqual({ msg: "Invalid comment ID!" });
+      });
+  });
+  test("DELETE 404: responds with an error when a comment is not found", () => {
+    return request(app)
+      .delete("/api/comments/5678")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body).toEqual({ msg: "Comment not found!" });
       });
   });
 });
