@@ -1,18 +1,19 @@
 const updateVotes = require("../Models/updateVotes.models");
 
 function patchArticleByArticleID(request, response, next) {
-  //   console.log(request.params);
-  //   console.log(request.body);
-
   const { article_id } = request.params;
   const { inc_votes } = request.body;
 
-  //   console.log(article_id, "<< article_id");
-  //   console.log(inc_votes, "<< votes");
+  if (!article_id) {
+    return response.status(404).send({ msg: "Bad Request!" });
+  }
+
+  if (typeof inc_votes !== "number") {
+    return response.status(400).send({ msg: "Bad Request!" });
+  }
 
   updateVotes(inc_votes, article_id)
     .then((updatedArticle) => {
-      console.log(updatedArticle, "<<< updated Article");
       response.status(200).send({ updatedArticle });
     })
     .catch((err) => {
