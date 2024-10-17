@@ -289,3 +289,19 @@ describe("/api/comments/:commet_id", () => {
       });
   });
 });
+
+describe("/api/users", () => {
+  test("GET 200: responds with an array of users with properties username, name and avatar_url", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(typeof user.username).toBe("string");
+          expect(typeof user.name).toBe("string");
+          expect(typeof user.avatar_url).toBe("string");
+        });
+      });
+  });
+});

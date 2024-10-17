@@ -6,3 +6,4 @@ exports.getArticleComments = require("./getArticleComments.controller");
 exports.postCommentsByArticle = require("./postCommentByArticle.controller");
 exports.patchArticleByArticleID = require("./patchArticleByArticleID.controller");
 exports.deleteCommentByID = require("./deleteCommentByID.controller");
+exports.getUsers = require("./getUsers.controller");
