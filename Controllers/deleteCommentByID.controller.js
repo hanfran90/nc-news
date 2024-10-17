@@ -3,8 +3,6 @@ const deleteComment = require("../Models/deleteComment.models");
 function deleteCommentByID(request, response, next) {
   const { comment_id } = request.params;
 
-  console.log(comment_id);
-
   if (isNaN(comment_id)) {
     return response.status(400).send({ msg: "Invalid comment ID!" });
   }
