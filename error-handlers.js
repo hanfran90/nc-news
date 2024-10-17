@@ -13,6 +13,6 @@ exports.customErrorHandler = (err, request, response, next) => {
 };
 
 exports.serverErrorHandler = (err, request, response, next) => {
-  //console.log(err);
+  console.log(err);
   response.status(500).send({ msg: "500 server error" });
 };

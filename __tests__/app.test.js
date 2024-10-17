@@ -84,6 +84,25 @@ describe("/api/articles/:article_id", () => {
         expect(msg).toBe("Bad Request!");
       });
   });
+  test.only("PATCH 200: responds with an updated article vote", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .expect(200)
+      .send({ inc_votes: 1 })
+      .then(({ body: { updatedArticle } }) => {
+        console.log({updatedArticle})
+        expect(updatedArticle.article_id).toBe(3);
+        expect(updatedArticle.title).toBe("Eight pug gifs that remind me of mitch");
+        expect(updatedArticle.topic).toBe("mitch");
+        expect(updatedArticle.author).toBe("icellusedkars");
+        expect(updatedArticle.body).toBe("some gifs");
+        expect(updatedArticle.created_at).toBe("2020-11-03T09:12:00.000Z");
+        expect(updatedArticle.votes).toBe(1);
+        expect(updatedArticle.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+      });
+  });
 });
 
 describe("/api/articles", () => {
