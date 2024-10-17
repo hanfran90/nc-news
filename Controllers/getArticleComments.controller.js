@@ -5,6 +5,9 @@ function getArticleComments(request, response, next) {
 
   fetchArticleComments(article_id)
     .then((comments) => {
+      if (comments.length === 0) {
+    response.status(200).send({comments});
+      }
       response.status(200).send({ comments });
     })
     .catch((err) => {
