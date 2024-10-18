@@ -12,9 +12,6 @@ function updateVotes(inc_votes, article_id) {
     .then((result) => {
       return result.rows[0];
     })
-    .catch((err) => {
-      console.log(err);
-    });
 }
 
 module.exports = updateVotes;
