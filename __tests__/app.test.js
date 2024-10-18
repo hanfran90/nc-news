@@ -144,12 +144,28 @@ describe("/api/articles", () => {
         });
       });
   });
-  test("GET 200: responds with articles sorted by date as default in descending order", () => {
+  test("GET 200: responds with articles sorted by created_at as default and descending as default", () => {
     return request(app)
-      .get("/api/articles")
+      .get("/api/articles?sort_by=created_at")
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET 200: responds with articles sorted by a given collumn name and descending as default", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("author", { descending: true });
+      });
+  });
+  test("GET 400: should recieve an error when sort_by is given a column that doesn't exist", () => {
+    return request(app)
+      .get("/api/articles?sort_by=non_existent")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request: Invalid sort_by!");
       });
   });
 });
