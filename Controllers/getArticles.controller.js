@@ -5,11 +5,7 @@ function getArticles(request, response, next) {
 
   fetchArticles(sort_by, order, topic)
     .then((articles) => {
-      if (articles.length === 0) {
-        response.status(404).send({ msg: "No articles found for that topic!" });
-      }
-
-      response.status(200).send({ articles });
+      return response.status(200).send({ articles });
     })
     .catch((err) => {
       next(err);

@@ -26,7 +26,14 @@ function fetchArticles(sort_by = "created_at", order = "desc", topic) {
     });
   }
 
-  let queryStr = `SELECT articles.article_id,
+  let topicQuery = `SELECT slug FROM topics WHERE slug = $1`;
+
+  return db.query(topicQuery, [topic]).then((result) => {
+    if (topic && result.rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "Topic doesn't exist!" });
+    }
+
+    let queryStr = `SELECT articles.article_id,
   articles.title,
   articles.author,
   articles.topic,
@@ -37,17 +44,18 @@ COUNT (comments.article_id) AS comment_count
 FROM articles
 LEFT JOIN comments ON comments.article_id = articles.article_id`;
 
-  let queryValues = [];
+    let queryValues = [];
 
-  if (topic) {
-    queryStr += ` WHERE articles.topic = $1`;
-    queryValues.push(topic);
-  }
+    if (topic) {
+      queryStr += ` WHERE articles.topic = $1`;
+      queryValues.push(topic);
+    }
 
-  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+    queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
 
-  return db.query(queryStr, queryValues).then((results) => {
-    return results.rows;
+    return db.query(queryStr, queryValues).then((results) => {
+      return results.rows;
+    });
   });
 }
 

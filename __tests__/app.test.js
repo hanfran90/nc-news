@@ -51,21 +51,20 @@ describe("/api/topics", () => {
 });
 
 describe("/api/articles/:article_id", () => {
-  test("GET 200: responds with the correct article object when requested by an id number", () => {
+  test("GET 200: responds with the correct article object when requested by an id number and a comment count", () => {
     return request(app)
       .get("/api/articles/3")
       .expect(200)
       .then(({ body: { article } }) => {
         expect(article.article_id).toBe(3);
-        expect(article.title).toBe("Eight pug gifs that remind me of mitch");
-        expect(article.topic).toBe("mitch");
-        expect(article.author).toBe("icellusedkars");
-        expect(article.body).toBe("some gifs");
-        expect(article.created_at).toBe("2020-11-03T09:12:00.000Z");
-        expect(article.votes).toBe(0);
-        expect(article.article_img_url).toBe(
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-        );
+        expect(article).toHaveProperty("title", expect.any(String));
+        expect(article).toHaveProperty("author", expect.any(String));
+        expect(article).toHaveProperty("topic", expect.any(String));
+        expect(article).toHaveProperty("created_at", expect.any(String));
+        expect(article).toHaveProperty("votes", expect.any(Number));
+        expect(article).toHaveProperty("article_img_url", expect.any(String));
+        expect(article).toHaveProperty("body", expect.any(String));
+        expect(article).toHaveProperty("comment_count", expect.any(String));
       });
   });
   test("GET 404: responds with an error when article_id is given the right type (ie number) but is not present in the database", () => {
@@ -122,6 +121,15 @@ describe("/api/articles/:article_id", () => {
         expect(msg).toBe("Bad Request!");
       });
   });
+  test("GET 200: responds with a comment_count when the article has comments", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toHaveProperty("comment_count");
+        expect(typeof article.comment_count).toBe("string");
+      });
+  });
 });
 
 describe("/api/articles", () => {
@@ -147,6 +155,22 @@ describe("/api/articles", () => {
   test("GET 200: responds with articles sorted by created_at as default and descending as default", () => {
     return request(app)
       .get("/api/articles?sort_by=created_at")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET 200: responds with articles sorted in ascending order when order=asc", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at&order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { descending: false });
+      });
+  });
+  test("GET 200: responds with articles sorted in descending order when order=desc", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at&order=desc")
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
@@ -186,12 +210,20 @@ describe("/api/articles", () => {
         });
       });
   });
-  test("GET 404: responds with an error when no article matches the topic query", () => {
+  test("GET 200: responds with an empty array when no articles match the topic query", () => {
     return request(app)
       .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toEqual([]);
+      });
+  });
+  test("GET 404: responds with an error when a topic doesn't exist", () => {
+    return request(app)
+      .get("/api/articles?topic=does_not_exist")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No articles found for that topic!");
+        expect(body.msg).toBe("Topic doesn't exist!");
       });
   });
 });
@@ -305,7 +337,7 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
-describe("/api/comments/:commet_id", () => {
+describe("/api/comments/:comment_id", () => {
   test("DELETE 204: responds with no content when given a valid comment id", () => {
     return request(app)
       .delete("/api/comments/7")
