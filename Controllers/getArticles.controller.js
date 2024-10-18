@@ -13,9 +13,3 @@ function getArticles(request, response, next) {
 }
 
 module.exports = getArticles;
-
-//   if (articles.length === 0) {
-//     return response
-//       .status(404)
-//       .send({ msg: "No articles found for that topic!" });
-//   }
