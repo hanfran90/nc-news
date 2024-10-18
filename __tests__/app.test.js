@@ -160,12 +160,38 @@ describe("/api/articles", () => {
         expect(articles).toBeSortedBy("author", { descending: true });
       });
   });
-  test("GET 400: should recieve an error when sort_by is given a column that doesn't exist", () => {
+  test("GET 400: responds with an error when sort_by is given a column that doesn't exist", () => {
     return request(app)
       .get("/api/articles?sort_by=non_existent")
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad Request: Invalid sort_by!");
+      });
+  });
+  test("GET 400: responds with an error when an order is invalid", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at&order=invalid_order")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request: Invalid order!");
+      });
+  });
+  test("GET 200: responds with articles which have been filtered based on topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        articles.forEach((article) => {
+          expect(article.topic).toBe("cats");
+        });
+      });
+  });
+  test("GET 404: responds with an error when no article matches the topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No articles found for that topic!");
       });
   });
 });
