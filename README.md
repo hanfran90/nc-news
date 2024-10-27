@@ -6,6 +6,8 @@ To successfully run this project locally please follow the instructions below.
 ## Project Summary
 NC News is a RESTful API built using Express.js, where you will be able to interact with PostgreSQL database. The database includes articles, topics, user accounts and comments. Users can request articles, add comments and interact with the articles. The API has been tested and adheres to RESTful practices.
 
+Link to the hosted version: https://nc-news-m2v4.onrender.com/api/
+
 
 ## Instructions
 Please read through the instructions and perform them in order to set up and use the API.
