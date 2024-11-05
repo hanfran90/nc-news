@@ -5,14 +5,9 @@ const {
   createRef,
   formatComments,
 } = require("./utils");
-const {
-  topicData,
-  userData,
-  articleData,
-  commentData,
-} = require("../data/test-data");
+const testData = require("../data/test-data");
 
-const seed = () => {
+const seed = ({ topicData, userData, articleData, commentData }) => {
   return db
     .query(`DROP TABLE IF EXISTS comments;`)
     .then(() => {

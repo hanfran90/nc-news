@@ -11,4 +11,6 @@ if (ENV === "production") {
 if (!process.env.PGDATABASE && !process.env.DATABASE_URL) {
   throw new Error("PGDATABASE or DATABASE_URL not set");
 }
+
+console.log(ENV, process.env.DATABASE_URL);
 module.exports = new Pool(config);
