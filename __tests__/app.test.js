@@ -362,6 +362,39 @@ describe("/api/comments/:comment_id", () => {
         expect(body).toEqual({ msg: "Comment not found!" });
       });
   });
+  test("PATCH 200: responds with updated comment when valid comment_id and inc_votes are provided", () => {
+    const voteChange = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/comments/7")
+      .send(voteChange)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.updatedComment).toHaveProperty("comment_id", 7);
+        expect(body.updatedComment).toHaveProperty("votes", expect.any(Number));
+      });
+  });
+
+  test("PATCH 400: responds with an error when inc_votes is invalid", () => {
+    const invalidVoteChange = { inc_votes: "invalid_value" };
+    return request(app)
+      .patch("/api/comments/7")
+      .send(invalidVoteChange)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toEqual({ msg: "Invalid value for inc_votes!" });
+      });
+  });
+
+  test("PATCH 404: responds with an error when the comment is not found", () => {
+    const voteChange = { inc_votes: 2 };
+    return request(app)
+      .patch("/api/comments/5678")
+      .send(voteChange)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body).toEqual({ msg: "Comment not found!" });
+      });
+  });
 });
 
 describe("/api/users", () => {
